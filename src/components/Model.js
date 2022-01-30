@@ -20,7 +20,7 @@ const categories = [
 ];
 
 function Model() {
-  const [image, setImage] = useState();
+  const [image, setImage] = useState("/elephant.jpeg");
   const [model, setModel] = useState();
   const [predictions, setPredictions] = useState([]);
   const [predictionIndex, setPredictionIndex] = useState("");
