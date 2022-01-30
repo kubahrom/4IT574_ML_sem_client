@@ -98,8 +98,8 @@ function Model() {
 
   // Load models
   useEffect(() => {
-    loadModel("v1", "http://127.0.0.1:5500/v1/model.json");
-    loadModel("v2", "http://127.0.0.1:5500/v2/model.json");
+    loadModel("v1", `${process.env.REACT_APP_BE_URL}/v1/model.json`);
+    loadModel("v2", `${process.env.REACT_APP_BE_URL}/v2/model.json`);
     loadTFModel();
   }, []);
 
@@ -109,6 +109,7 @@ function Model() {
 
   return (
     <Wrapper>
+      {process.env.REACT_APP_TEST}
       <Typography sx={{ py: 1 }}>
         {model === undefined
           ? "Loading model"
@@ -186,7 +187,7 @@ function Model() {
             ) : (
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 {predictions.map((pred) => (
-                  <Box>
+                  <Box key={pred.className}>
                     <Typography sx={{ fontWeight: "bold" }}>
                       {pred.className}
                     </Typography>
