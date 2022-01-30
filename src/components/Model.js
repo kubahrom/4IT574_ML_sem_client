@@ -1,4 +1,5 @@
 import { Button, Paper, Typography } from "@mui/material";
+import { Box } from "@mui/system";
 import * as tf from "@tensorflow/tfjs";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -22,21 +23,13 @@ function Model() {
   const [image, setImage] = useState();
   const [model, setModel] = useState();
   const [predictions, setPredictions] = useState([]);
-  const [predictionIndex, setPredictionIndex] = useState();
+  const [predictionIndex, setPredictionIndex] = useState("");
   const [selectedModel, setSelectedModel] = useState("v1");
   const [loadedModels, setLoadedModels] = useState({
     v1: null,
     v2: null,
     tf: null,
   });
-
-  // Handle change of images
-  const handleChange = (e) => {
-    if (e.target.files.length > 0) {
-      setImage(URL.createObjectURL(e.target.files[0]));
-    }
-    setPredictionIndex(null);
-  };
 
   const loadModel = async (modelName, url) => {
     try {
@@ -60,14 +53,15 @@ function Model() {
 
   const handleRadioChange = (event) => {
     setSelectedModel(event.target.value);
+    setPredictionIndex("");
   };
 
   const predict = async () => {
     const imageEl = document.getElementById("image");
     if (selectedModel === "tf") {
-      // TODO: show predictions predictions
       const predictions = await model.classify(imageEl);
-      console.log(predictions);
+      setPredictionIndex(predictions[0].className);
+      setPredictions(predictions);
     } else {
       let imagePrediction = await tf.browser.fromPixels(imageEl);
       const imageSize = selectedModel === "v1" ? [80, 80] : [180, 180];
@@ -81,6 +75,14 @@ function Model() {
     }
   };
 
+  // Handle change of images
+  const handleChange = (e) => {
+    if (e.target.files.length > 0) {
+      setImage(URL.createObjectURL(e.target.files[0]));
+    }
+    setPredictionIndex("");
+  };
+
   const calculatePrediction = (prediction) => {
     let biggestPrediction = 0;
     let categoryIndex = 0;
@@ -91,7 +93,7 @@ function Model() {
         categoryIndex = index;
       }
     }
-    setPredictionIndex(categoryIndex);
+    setPredictionIndex(categories[categoryIndex]);
   };
 
   // Load models
@@ -114,7 +116,7 @@ function Model() {
           ? "Failed to load model"
           : "Model loaded"}
       </Typography>
-      {typeof predictionIndex === "number" ? (
+      {predictionIndex !== "" ? (
         <Typography variant="h5" component="p" sx={{ py: 2 }}>
           Prediction:{" "}
           <Typography
@@ -123,7 +125,7 @@ function Model() {
             variant="h4"
             style={{ textTransform: "capitalize" }}
           >
-            {categories[predictionIndex]}
+            {predictionIndex}
           </Typography>
         </Typography>
       ) : (
@@ -158,26 +160,44 @@ function Model() {
             displayImage={!!image}
           />
         </ImageWrapper>
-        {typeof predictionIndex === "number" && predictions.length !== 0 && (
+        {predictionIndex !== "" && (
           <Paper elevation={3} sx={paperStyles}>
-            <Table>
-              <thead style={{ fontWeight: "bold" }}>
-                <Row>
-                  <td>Category</td>
-                  <td>Percentage</td>
-                </Row>
-              </thead>
-              <tbody>
-                {categories.map((category, idx) => (
-                  <Row key={category}>
-                    <td>{category}</td>
-                    <td>
-                      {Number.parseFloat(predictions[idx] * 100).toPrecision(4)}
-                    </td>
+            {selectedModel !== "tf" ? (
+              <Table>
+                <thead style={{ fontWeight: "bold" }}>
+                  <Row>
+                    <td>Category</td>
+                    <td>Percentage</td>
                   </Row>
+                </thead>
+                <tbody>
+                  {categories.map((category, idx) => (
+                    <Row key={category}>
+                      <td>{category}</td>
+                      <td>
+                        {Number.parseFloat(predictions[idx] * 100).toPrecision(
+                          4
+                        )}
+                      </td>
+                    </Row>
+                  ))}
+                </tbody>
+              </Table>
+            ) : (
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                {predictions.map((pred) => (
+                  <Box>
+                    <Typography sx={{ fontWeight: "bold" }}>
+                      {pred.className}
+                    </Typography>
+                    <Typography>
+                      {Number.parseFloat(pred.probability * 100).toPrecision(4)}{" "}
+                      %
+                    </Typography>
+                  </Box>
                 ))}
-              </tbody>
-            </Table>
+              </Box>
+            )}
           </Paper>
         )}
       </ResultsWrapper>
