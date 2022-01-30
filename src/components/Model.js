@@ -94,6 +94,7 @@ function Model() {
       }
     }
     setPredictionIndex(categories[categoryIndex]);
+    console.log(prediction);
   };
 
   // Load models
@@ -177,7 +178,7 @@ function Model() {
                       <td>{category}</td>
                       <td>
                         {Number.parseFloat(predictions[idx] * 100).toPrecision(
-                          4
+                          6
                         )}
                       </td>
                     </Row>
