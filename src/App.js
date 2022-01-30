@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import styled from "styled-components";
 import Model from "./components/Model";
+import Links from "./components/Links";
 
 function App() {
   const theme = createTheme({
@@ -24,6 +25,16 @@ function App() {
             <Typography variant="h4" component="h1" align="center">
               Animal image classifier
             </Typography>
+            <Box sx={linksStyles}>
+              <Links
+                text="client"
+                link="https://github.com/kubahrom/4IT574_sem"
+              />
+              <Links
+                text="server"
+                link="https://github.com/kubahrom/4IT574_sem_server"
+              />
+            </Box>
             <Model />
           </Container>
         </Box>
@@ -44,3 +55,10 @@ const StyledLogo = styled.img`
   width: 100px;
   height: 100px;
 `;
+
+const linksStyles = {
+  display: "flex",
+  gap: 2,
+  justifyContent: "center",
+  py: 1,
+};
