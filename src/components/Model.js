@@ -62,6 +62,7 @@ function Model() {
       const predictions = await model.classify(imageEl);
       setPredictionIndex(predictions[0].className);
       setPredictions(predictions);
+      console.log(selectedModel, predictions);
     } else {
       let imagePrediction = await tf.browser.fromPixels(imageEl);
       const imageSize = selectedModel === "v1" ? [80, 80] : [180, 180];
@@ -72,6 +73,7 @@ function Model() {
       const data = await result.data();
       calculatePrediction(data);
       setPredictions(data);
+      console.log(selectedModel, data);
     }
   };
 
@@ -94,7 +96,6 @@ function Model() {
       }
     }
     setPredictionIndex(categories[categoryIndex]);
-    console.log(prediction);
   };
 
   // Load models
